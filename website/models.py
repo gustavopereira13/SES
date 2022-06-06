@@ -2,6 +2,7 @@ from bson import json_util
 from flask_login import UserMixin
 from flask import json
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Integer
 from sqlalchemy.sql import func
 
 db = SQLAlchemy()
@@ -19,6 +20,7 @@ class File(db.Model):
     file_name = db.Column(db.String(10000))
     file_location = db.Column(db.String(10000))
     file_owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+    is_owner = db.Column(db.Integer)
     file_date = db.Column(db.DateTime(timezone=True), default=func.now())
 
 

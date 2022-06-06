@@ -3,7 +3,25 @@
 <h1 align="center">Files</h1>
 <ul class="list-group list-group-flush" id="files">
        {% for file in user.files %}
-       <li class="list-group-item">{{ file.file_name }}</li>
+       <li class="list-group-item">
+       <form class="form-inline">
+       <div class="form-group mb-2">
+       {{ file.file_name }}
+       </div>
+       <div class="form-group mx-sm-3 mb-2">
+              <input type="text" class="form-control" id="username" placeholder="Username">
+       </div>
+              <button type="button" class="close" onclick="deleteFile({{ file.id }},2)">
+              <span aria-hidden="true">&rAarr;</span>
+              </button>
+              <button type="button" class="close" onclick="deleteFile({{ file.id }},3)">
+              <span aria-hidden="true">&dArr;</span>
+              </button>
+              <button type="button" class="close" onclick="deleteFile({{ file.id }},1)">
+              <span aria-hidden="true">&times;</span>
+              </button>
+</form>
+       </li>
        {% endfor %}
 </ul>
 <form method="POST" enctype="multipart/form-data">

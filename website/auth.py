@@ -1,7 +1,10 @@
+from os import path, makedirs
+
 from flask import Blueprint, render_template, request, flash, json, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash  # BUE SECURE
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User, db
+from . import app
 
 auth = Blueprint('auth', __name__)
 
@@ -54,6 +57,9 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
+            isExist = path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+            if not isExist:
+                makedirs(isExist)
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 

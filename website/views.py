@@ -26,8 +26,9 @@ def home():
                 file_name = secure_filename(file.filename)
                 file_exists = File.query.filter_by(file_name=file_name, file_owner=current_user.id).first()
                 if file and allowed_file(file.filename) and not file_exists:
-                    file.save(path.join(app.config['UPLOAD_FOLDER'], file_name))
-                    completeName = path.join(UPLOAD_FOLDER, file_name)
+                    print(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_name))
+                    file.save(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_name))
+                    completeName = path.join(UPLOAD_FOLDER, current_user.username,file_name)
                     print(file_name)
                     new_file = File(file_owner=current_user.id, file_name=file.filename, file_location=completeName,
                                     is_owner=1)
@@ -62,23 +63,23 @@ def delete_file():
                         shared_files = File.query.filter_by(file_name=filename,is_owner=0).first()
                         if shared_files:
                             if shared_files is not list:
+                                sharedfile_path=shared_files.file_location
+                                remove(sharedfile_path)
                                 db.session.delete(shared_files)
                                 db.session.commit()
                             else:
                                 for shared_file in shared_files:
                                     db.session.delete(shared_file)
                                     db.session.commit()
-                        #check if nobody has the same file (and its owner) in db so it can delete safely
-                        file_exists = File.query.filter_by(file_name=filename).first()
-                        if not file_exists:
-                            remove(file_path)
+                        #check if owner is deleting
+                        remove(file_path)
                         flash(filename + ' deleted successfully', category='success')
             if types == 2:  # share file
                 username = data['username']
                 print(username)
                 user = User.query.filter_by(username=username).first()
                 if user:
-                    user_file = File.query.filter_by(file_owner=user.id, file_name=file.file_name)
+                    user_file = File.query.filter_by(file_owner=user.id, file_name=file.file_name).first()
                     if not user_file:
                         new_file = File(file_owner=user.id, file_name=file.file_name, file_location=file.file_location,
                                         is_owner=0)

@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1 align="center">Files</h1>
+<ul class="list-group list-group-flush" id="files">
+       {% for file in user.files %}
+       <li class="list-group-item">{{ file.file_name }}</li>
+       {% endfor %}
+</ul>
+<form method="POST" enctype="multipart/form-data">
+       <p>
+       <input type="file" name="files[]" multiple="true" autocomplete="off" required>
+       </p>
+       </dl>
+       <p>
+       <input type="submit" value="Submit">
+       </p>
+</form>
+{% endblock %}

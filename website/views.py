@@ -1,5 +1,5 @@
 import flask
-from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify, send_file, send_from_directory
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.utils import secure_filename
 import json
@@ -28,7 +28,7 @@ def home():
                 if file and allowed_file(file.filename) and not file_exists:
                     print(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_name))
                     file.save(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_name))
-                    completeName = path.join(UPLOAD_FOLDER, current_user.username,file_name)
+                    completeName = path.join(UPLOAD_FOLDER, current_user.username, file_name)
                     print(file_name)
                     new_file = File(file_owner=current_user.id, file_name=file.filename, file_location=completeName,
                                     is_owner=1)
@@ -59,11 +59,11 @@ def delete_file():
                     filename = file.file_name
                     print(file_path)
                     if path.exists(file_path) and file.is_owner == 1:
-                        #all files with the same name that are not the owner aka owner=0 aka shared file
-                        shared_files = File.query.filter_by(file_name=filename,is_owner=0).first()
+                        # all files with the same name that are not the owner aka owner=0 aka shared file
+                        shared_files = File.query.filter_by(file_name=filename, is_owner=0).first()
                         if shared_files:
                             if shared_files is not list:
-                                sharedfile_path=shared_files.file_location
+                                sharedfile_path = shared_files.file_location
                                 remove(sharedfile_path)
                                 db.session.delete(shared_files)
                                 db.session.commit()
@@ -71,7 +71,7 @@ def delete_file():
                                 for shared_file in shared_files:
                                     db.session.delete(shared_file)
                                     db.session.commit()
-                        #check if owner is deleting
+                        # check if owner is deleting
                         remove(file_path)
                         flash(filename + ' deleted successfully', category='success')
             if types == 2:  # share file
@@ -90,18 +90,19 @@ def delete_file():
                         flash(file.file_name + ' already shared with this user', category='error')
                 else:
                     flash('User ' + username + ' does not exist', category='error')
+            if types == 3:
+                return redirect(url_for('views.download', file_name=file.file_name))
+
     return jsonify({})
 
 
-@views.route('/share-file', methods=['POST'])
+@views.route('/download/<file_id>',methods=['GET','POST'])
 @login_required
-def share_file():
-    data = json.loads(request.data)
-    fileId = data['fileId']
-    file = File.query.get(fileId)
-    userId = data['userId']
-    print(userId)
-    user = User.query.get(userId)
+def download(file_id):
+    print(file_id)
+    test = path.join(app.config['UPLOAD_FOLDER'], current_user.username,file_id)
+    print(test)
+    return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username,file_id), as_attachment=True)
 
 
 def allowed_file(filename):

@@ -20,10 +20,11 @@
               <span aria-hidden="true">Share File</span>
               </button>
               </div>
-
-              <button type="button" class="close" onclick="deleteFile({{ file.id }},3)">
+              <a href="/download/{{file.file_name}}" download="test">
+              <button type="button" class="close">
               <span aria-hidden="true">&dArr;</span>
               </button>
+              </a>
               <button type="button" class="close" onclick="deleteFile({{ file.id }},1)">
               <span aria-hidden="true">&times;</span>
               </button>

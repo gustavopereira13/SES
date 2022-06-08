@@ -99,11 +99,14 @@ def delete_file():
 @views.route('/download/<file_id>',methods=['GET','POST'])
 @login_required
 def download(file_id):
-    print(file_id)
+    file = File.query.get(file_id)
     test = path.join(app.config['UPLOAD_FOLDER'], current_user.username,file_id)
     print(test)
-    return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username,file_id), as_attachment=True)
-
+    if file.file_owner == current_user.id:
+        return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username,file.file_name), as_attachment=True)
+    else:
+        flash('Download failed', category='error')
+        return render_template("home.html", user=current_user)
 
 def allowed_file(filename):
     return '.' in filename and \

@@ -1,10 +1,11 @@
 from os import path, makedirs
 
-from flask import Blueprint, render_template, request, flash, json, redirect, url_for
-from werkzeug.security import generate_password_hash, check_password_hash  # BUE SECURE
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, login_required, logout_user, current_user
-from .models import User, db
+from werkzeug.security import generate_password_hash, check_password_hash  # BUE SECURE
+
 from . import app
+from .models import User, db
 
 auth = Blueprint('auth', __name__)
 

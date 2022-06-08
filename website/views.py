@@ -1,11 +1,12 @@
-import flask
-from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify, send_file, send_from_directory
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.utils import secure_filename
 import json
-from .models import File, db, User
-from . import UPLOAD_FOLDER, app
 from os import path, remove
+
+from flask import Blueprint, render_template, request, redirect, flash, jsonify, send_file
+from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
+
+from . import UPLOAD_FOLDER, app
+from .models import File, db, User
 
 views = Blueprint('views', __name__)
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -50,7 +51,7 @@ def delete_file():
         print(types)
         file = File.query.get(fileId)
         if file:
-            # type 1->delete 2->share 3->download
+            # type 1->delete 2->share
             if types == 1:  # delete file
                 if file.file_owner == current_user.id:
                     db.session.delete(file)
@@ -90,23 +91,23 @@ def delete_file():
                         flash(file.file_name + ' already shared with this user', category='error')
                 else:
                     flash('User ' + username + ' does not exist', category='error')
-            if types == 3:
-                return redirect(url_for('views.download', file_name=file.file_name))
 
     return jsonify({})
 
 
-@views.route('/download/<file_id>',methods=['GET','POST'])
+@views.route('/download/<file_id>', methods=['GET', 'POST'])
 @login_required
 def download(file_id):
     file = File.query.get(file_id)
-    test = path.join(app.config['UPLOAD_FOLDER'], current_user.username,file_id)
+    test = path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_id)
     print(test)
     if file.file_owner == current_user.id:
-        return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username,file.file_name), as_attachment=True)
+        return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file.file_name),
+                         as_attachment=True)
     else:
         flash('Download failed', category='error')
         return render_template("home.html", user=current_user)
+
 
 def allowed_file(filename):
     return '.' in filename and \

@@ -102,7 +102,7 @@ def download(file_id):
     test = path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_id)
     print(test)
     if file.file_owner == current_user.id:
-        return send_file(path.join(app.config['UPLOAD_FOLDER'], current_user.username, file.file_name),
+        return send_file(file.file_location,
                          as_attachment=True)
     else:
         flash('Download failed', category='error')

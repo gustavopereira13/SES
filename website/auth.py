@@ -58,9 +58,10 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
-            isExist = path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+            isExist = path.exists(path.join(app.config['UPLOAD_FOLDER'], current_user.username))
+            print(isExist)
             if not isExist:
-                makedirs(isExist)
+                makedirs(path.join(app.config['UPLOAD_FOLDER'], current_user.username))
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 

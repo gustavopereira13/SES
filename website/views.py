@@ -18,7 +18,7 @@ def home():
     if request.method == 'POST':
         if 'files[]' not in request.files:
             flash('No file part', category='error')
-            return redirect(request.url)
+            return render_template("home.html", user=current_user)
         files = request.files.getlist('files[]')
 
         print(len(files))
@@ -65,7 +65,7 @@ def delete_file():
                         if shared_files:
                             if shared_files is not list:
                                 sharedfile_path = shared_files.file_location
-                                remove(sharedfile_path)
+                                remove(secure_filename(sharedfile_path))
                                 db.session.delete(shared_files)
                                 db.session.commit()
                             else:
@@ -73,7 +73,7 @@ def delete_file():
                                     db.session.delete(shared_file)
                                     db.session.commit()
                         # check if owner is deleting
-                        remove(file_path)
+                        remove(secure_filename(file_path))
                         flash(filename + ' deleted successfully', category='success')
             if types == 2:  # share file
                 username = data['username']
@@ -102,7 +102,7 @@ def download(file_id):
     test = path.join(app.config['UPLOAD_FOLDER'], current_user.username, file_id)
     print(test)
     if file.file_owner == current_user.id:
-        return send_file(file.file_location,
+        return send_file(secure_filename(file.file_location),
                          as_attachment=True)
     else:
         flash('Download failed', category='error')

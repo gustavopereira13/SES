@@ -26,9 +26,8 @@ def login():
                 flash('Incorrect password, try again.', category='error')
         else:
             flash('User does not exist.', category='error')
-    resp = render_template("login.html", user = current_user)
-    resp.headers['Content-Security-Policy'] = "default-src 'self';"
-    return resp
+
+    return render_template("login.html", user=current_user)
 
 
 @auth.route('/logout')
